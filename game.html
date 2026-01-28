@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<title>Găsește bila</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  🎯 Găsește bila
+  <div id="coins"></div>
+</header>
+
+<main class="game-area">
+
+  <button class="start-btn" onclick="startGame()">
+    Start joc (−1.000 coins)
+  </button>
+
+  <div class="cups" id="cups">
+    <div class="cup" data-pos="0"><div class="ball"></div></div>
+    <div class="cup" data-pos="1"><div class="ball"></div></div>
+    <div class="cup" data-pos="2"><div class="ball"></div></div>
+    <div class="cup" data-pos="3"><div class="ball"></div></div>
+    <div class="cup" data-pos="4"><div class="ball"></div></div>
+  </div>
+
+  <div class="message" id="msg"></div>
+
+</main>
+
+<footer>Joc demo · Fără bani reali · 18+</footer>
+
+<script>
+const START_COINS = 100000;
+const BET = 1000;
+const WIN = 5000;
+
+let cups = Array.from(document.querySelectorAll(".cup"));
+let ballCup = null;
+let playing = false;
+
+if(!localStorage.getItem("coins")){
+  localStorage.setItem("coins", START_COINS);
+}
+updateCoins();
+
+function updateCoins(){
+  document.getElementById("coins").innerText =
+    "💰 Sold: " + localStorage.getItem("coins") + " coins";
+}
+
+function startGame(){
+  if(playing) return;
+
+  let coins = +localStorage.getItem("coins");
+  if(coins < BET){
+    alert("Nu ai suficiente coins!");
+    return;
+  }
+
+  localStorage.setItem("coins", coins - BET);
+  updateCoins();
+
+  playing = true;
+  document.getElementById("msg").innerText = "Urmărește bila…";
+
+  cups.forEach(c=>{
+    c.classList.remove("reveal");
+    c.querySelector(".ball").style.display = "none";
+    c.style.transform = "translateX(0)";
+    c.onclick = null;
+  });
+
+  // alegem paharul cu bila
+  const index = Math.floor(Math.random() * cups.length);
+  ballCup = cups[index];
+  ballCup.querySelector(".ball").style.display = "block";
+
+  setTimeout(()=>{
+    ballCup.querySelector(".ball").style.display = "none";
+    document.getElementById("msg").innerText = "Amestec paharele…";
+    shuffleReal();
+  }, 1500);
+}
+
+/* 🔥 AMESTECARE REALĂ + MUTARE BILĂ */
+function shuffleReal(){
+  let rounds = 8;
+  let step = 0;
+
+  function doSwap(){
+    if(step >= rounds){
+      document.getElementById("msg").innerText = "Alege paharul!";
+      enablePick();
+      return;
+    }
+
+    let a = Math.floor(Math.random() * cups.length);
+    let b = Math.floor(Math.random() * cups.length);
+    if(a === b){
+      doSwap();
+      return;
+    }
+
+    const cupA = cups[a];
+    const cupB = cups[b];
+    const distance = (b - a) * 90;
+
+    cupA.style.transition = "transform .35s ease";
+    cupB.style.transition = "transform .35s ease";
+
+    cupA.style.transform = `translateX(${distance}px)`;
+    cupB.style.transform = `translateX(${-distance}px)`;
+
+    setTimeout(()=>{
+      // swap în DOM
+      const parent = document.getElementById("cups");
+      const next = cupA.nextSibling === cupB ? cupA : cupA.nextSibling;
+      parent.insertBefore(cupB, cupA);
+      parent.insertBefore(cupA, next);
+
+      // 🔑 MUTĂM REFERINȚA BILEI
+      if(ballCup === cupA) ballCup = cupB;
+      else if(ballCup === cupB) ballCup = cupA;
+
+      // reset vizual
+      cupA.style.transition = "none";
+      cupB.style.transition = "none";
+      cupA.style.transform = "translateX(0)";
+      cupB.style.transform = "translateX(0)";
+
+      cups = Array.from(document.querySelectorAll(".cup"));
+      step++;
+      setTimeout(doSwap, 60);
+    }, 350);
+  }
+
+  doSwap();
+}
+
+function enablePick(){
+  cups.forEach(cup=>{
+    cup.onclick = ()=> pick(cup);
+  });
+}
+
+function pick(cup){
+  if(!playing) return;
+  playing = false;
+
+  cup.classList.add("reveal");
+  ballCup.querySelector(".ball").style.display = "block";
+
+  if(cup === ballCup){
+    localStorage.setItem(
+      "coins",
+      +localStorage.getItem("coins") + WIN
+    );
+    document.getElementById("msg").innerText =
+      "🎉 CÂȘTIG! +" + WIN + " coins";
+  } else {
+    document.getElementById("msg").innerText =
+      "❌ Ai pierdut!";
+  }
+
+  updateCoins();
+}
+</script>
+
+</body>
+</html>
