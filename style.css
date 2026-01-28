@@ -30,10 +30,9 @@ header{
   color:#fff;
   font-weight:bold;
   cursor:pointer;
-  z-index:999;
 }
 
-/* JOC */
+/* GAME */
 .game-area{
   margin:30px auto;
   max-width:520px;
@@ -47,20 +46,22 @@ header{
   border:none;
   border-radius:999px;
   background:linear-gradient(135deg,#f5d36c,#c9a83f);
-  color:#000;
   font-weight:bold;
   cursor:pointer;
 }
 
 /* PAHARE */
 .cups{
-  display:grid;
-  grid-template-columns:repeat(5, 1fr);
-  gap:14px;
-  margin:50px 0;
+  position:relative;
+  width:430px;
+  height:150px;
+  margin:50px auto;
 }
 
 .cup{
+  position:absolute;
+  top:0;
+  width:70px;
   height:110px;
   background:
     repeating-linear-gradient(
@@ -72,21 +73,16 @@ header{
     );
   border:3px solid #a8ffd5;
   border-radius:36px 36px 14px 14px;
-  position:relative;
   cursor:pointer;
-  transition:transform .3s ease;
+  transition:left .4s ease, transform .3s ease;
 }
 
-/* ANIMAȚII */
-.cup.shake{
-  transform:translateY(-8px);
-}
-
+/* RIDICARE */
 .cup.reveal{
   transform:translateY(-50px);
 }
 
-/* BILĂ */
+/* BILA */
 .ball{
   width:18px;
   height:18px;
