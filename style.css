@@ -96,3 +96,50 @@ footer{
   font-size:12px;
   opacity:.6;
 }
+.auth-box{
+  max-width:320px;
+  margin:100px auto;
+  padding:25px;
+  background:#111;
+  border-radius:14px;
+  box-shadow:0 0 30px rgba(0,0,0,.7);
+}
+
+.auth-box h2{
+  margin-bottom:20px;
+}
+
+.auth-box input{
+  width:100%;
+  padding:12px;
+  margin-bottom:12px;
+  border-radius:8px;
+  border:none;
+}
+
+.auth-box button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:999px;
+  background:linear-gradient(135deg,#f5d36c,#c9a83f);
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.auth-link{
+  margin-top:12px;
+  font-size:14px;
+}
+
+.bonus{
+  color:#2ecc71;
+  margin-top:10px;
+}
+
+.logout{
+  position:fixed;
+  top:15px;
+  right:15px;
+  padding:8px 16px;
+}
