@@ -80,25 +80,40 @@ function startGame(){
 
 function shuffleAnimation(){
   let moves = 8;
-  let i = 0;
+  let step = 90; // distanța dintre pahare
+  let center = Math.floor(cups.length / 2);
+  let count = 0;
 
   let interval = setInterval(()=>{
-    cups.forEach((cup, idx)=>{
-      let offset = (idx - 2) * 90;
+
+    // amestec logic
+    cups.sort(() => Math.random() - 0.5);
+
+    // poziționare vizibilă
+    cups.forEach((cup, i)=>{
+      let offset = (i - center) * step;
       cup.style.transform = `translateX(${offset}px)`;
     });
 
-    cups.sort(() => Math.random() - 0.5);
-
-    i++;
-    if(i >= moves){
+    count++;
+    if(count >= moves){
       clearInterval(interval);
-      document.getElementById("msg").innerText = "Alege paharul!";
+
+      // 🔴 FIXUL IMPORTANT: ALINIERE FINALĂ
+      cups.forEach((cup, i)=>{
+        let offset = (i - center) * step;
+        cup.style.transform =
+          `translateX(${offset}px)`;
+      });
+
+      document.getElementById("msg").innerText =
+        "Alege paharul!";
       enablePick();
     }
-  }, 300);
-}
 
+  }, 300);
+    }
+    
 function enablePick(){
   cups.forEach((cup)=>{
     cup.onclick = ()=> pick(cup);
