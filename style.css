@@ -36,12 +36,13 @@ header{
 }
 
 /* CONTAINER */
-.cups{
+  .cups{
   position:relative;
   height:160px;
+  width:100%;
+  max-width:520px;
   margin:50px auto;
-}
-
+  }
 /* PAHAR CORECT (GURA JOS) */
 .cup{
   width:75px;
