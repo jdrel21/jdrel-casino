@@ -82,3 +82,32 @@ footer {
   font-size: 13px;
   opacity: 0.7;
 }
+/* Card joc */
+.game {
+  background:#111;
+  padding:20px;
+  border-radius:14px;
+  text-align:center;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.game:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 10px 30px rgba(0,0,0,.6);
+}
+
+/* Butoane animate */
+.cta, .game a {
+  display:inline-block;
+  margin-top:10px;
+  background: linear-gradient(135deg,#d4af37,#b8962e);
+  color:#000;
+  padding:12px 26px;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:bold;
+  transition: transform .15s ease, filter .15s ease;
+}
+.cta:hover, .game a:hover {
+  transform: scale(1.06);
+  filter: brightness(1.05);
+}
