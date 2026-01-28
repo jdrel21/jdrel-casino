@@ -71,6 +71,8 @@ function startGame(){
   cups.forEach(c=>{
     c.classList.remove("reveal");
     c.querySelector(".ball").style.display = "none";
+    c.style.transform = "translateX(0)";
+    c.onclick = null;
   });
 
   // arătăm bila
@@ -80,37 +82,60 @@ function startGame(){
   setTimeout(()=>{
     cups[ballIndex].querySelector(".ball").style.display = "none";
     document.getElementById("msg").innerText = "Amestec paharele…";
-    shuffle();
+    shuffleReal();
   }, 1500);
 }
 
-function shuffle(){
+/* 🔥 AMESTECARE REALĂ */
+function shuffleReal(){
   let rounds = 6;
-  let i = 0;
+  let step = 0;
 
-  let interval = setInterval(()=>{
-    let a = Math.floor(Math.random() * cups.length);
-    let b = Math.floor(Math.random() * cups.length);
-    if(a === b) return;
-
-    // swap în DOM (GRID se ocupă de poziție)
-    const parent = document.getElementById("cups");
-    parent.insertBefore(cups[b], cups[a]);
-
-    cups = Array.from(document.querySelectorAll(".cup"));
-    cups.forEach(c => c.classList.add("shake"));
-
-    setTimeout(()=>{
-      cups.forEach(c => c.classList.remove("shake"));
-    }, 200);
-
-    i++;
-    if(i >= rounds){
-      clearInterval(interval);
+  function doSwap(){
+    if(step >= rounds){
       document.getElementById("msg").innerText = "Alege paharul!";
       enablePick();
+      return;
     }
-  }, 350);
+
+    let a = Math.floor(Math.random() * cups.length);
+    let b = Math.floor(Math.random() * cups.length);
+    if(a === b){
+      doSwap();
+      return;
+    }
+
+    const cupA = cups[a];
+    const cupB = cups[b];
+
+    const dir = (b - a) * 90;
+
+    cupA.style.transition = "transform .35s ease";
+    cupB.style.transition = "transform .35s ease";
+
+    cupA.style.transform = `translateX(${dir}px)`;
+    cupB.style.transform = `translateX(${-dir}px)`;
+
+    setTimeout(()=>{
+      // swap DOM
+      const parent = document.getElementById("cups");
+      const next = cupA.nextSibling === cupB ? cupA : cupA.nextSibling;
+      parent.insertBefore(cupB, cupA);
+      parent.insertBefore(cupA, next);
+
+      // reset
+      cupA.style.transition = "none";
+      cupB.style.transition = "none";
+      cupA.style.transform = "translateX(0)";
+      cupB.style.transform = "translateX(0)";
+
+      cups = Array.from(document.querySelectorAll(".cup"));
+      step++;
+      setTimeout(doSwap, 50);
+    }, 350);
+  }
+
+  doSwap();
 }
 
 function enablePick(){
