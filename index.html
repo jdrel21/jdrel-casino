@@ -40,7 +40,7 @@ const BET = 1000;
 const WIN = 5000;
 
 let cups = Array.from(document.querySelectorAll(".cup"));
-let ballIndex = -1;
+let ballCup = null;
 let playing = false;
 
 if(!localStorage.getItem("coins")){
@@ -75,20 +75,21 @@ function startGame(){
     c.onclick = null;
   });
 
-  // arătăm bila
-  ballIndex = Math.floor(Math.random() * cups.length);
-  cups[ballIndex].querySelector(".ball").style.display = "block";
+  // alegem paharul cu bila
+  const index = Math.floor(Math.random() * cups.length);
+  ballCup = cups[index];
+  ballCup.querySelector(".ball").style.display = "block";
 
   setTimeout(()=>{
-    cups[ballIndex].querySelector(".ball").style.display = "none";
+    ballCup.querySelector(".ball").style.display = "none";
     document.getElementById("msg").innerText = "Amestec paharele…";
     shuffleReal();
   }, 1500);
 }
 
-/* 🔥 AMESTECARE REALĂ */
+/* 🔥 AMESTECARE REALĂ + MUTARE BILĂ */
 function shuffleReal(){
-  let rounds = 6;
+  let rounds = 8;
   let step = 0;
 
   function doSwap(){
@@ -107,23 +108,26 @@ function shuffleReal(){
 
     const cupA = cups[a];
     const cupB = cups[b];
-
-    const dir = (b - a) * 90;
+    const distance = (b - a) * 90;
 
     cupA.style.transition = "transform .35s ease";
     cupB.style.transition = "transform .35s ease";
 
-    cupA.style.transform = `translateX(${dir}px)`;
-    cupB.style.transform = `translateX(${-dir}px)`;
+    cupA.style.transform = `translateX(${distance}px)`;
+    cupB.style.transform = `translateX(${-distance}px)`;
 
     setTimeout(()=>{
-      // swap DOM
+      // swap în DOM
       const parent = document.getElementById("cups");
       const next = cupA.nextSibling === cupB ? cupA : cupA.nextSibling;
       parent.insertBefore(cupB, cupA);
       parent.insertBefore(cupA, next);
 
-      // reset
+      // 🔑 MUTĂM REFERINȚA BILEI
+      if(ballCup === cupA) ballCup = cupB;
+      else if(ballCup === cupB) ballCup = cupA;
+
+      // reset vizual
       cupA.style.transition = "none";
       cupB.style.transition = "none";
       cupA.style.transform = "translateX(0)";
@@ -131,7 +135,7 @@ function shuffleReal(){
 
       cups = Array.from(document.querySelectorAll(".cup"));
       step++;
-      setTimeout(doSwap, 50);
+      setTimeout(doSwap, 60);
     }, 350);
   }
 
@@ -139,19 +143,19 @@ function shuffleReal(){
 }
 
 function enablePick(){
-  cups.forEach((cup, index)=>{
-    cup.onclick = ()=> pick(index);
+  cups.forEach(cup=>{
+    cup.onclick = ()=> pick(cup);
   });
 }
 
-function pick(index){
+function pick(cup){
   if(!playing) return;
   playing = false;
 
-  cups[index].classList.add("reveal");
-  cups[ballIndex].querySelector(".ball").style.display = "block";
+  cup.classList.add("reveal");
+  ballCup.querySelector(".ball").style.display = "block";
 
-  if(index === ballIndex){
+  if(cup === ballCup){
     localStorage.setItem(
       "coins",
       +localStorage.getItem("coins") + WIN
@@ -159,7 +163,8 @@ function pick(index){
     document.getElementById("msg").innerText =
       "🎉 CÂȘTIG! +" + WIN + " coins";
   } else {
-    document.getElementById("msg").innerText = "❌ Ai pierdut!";
+    document.getElementById("msg").innerText =
+      "❌ Ai pierdut!";
   }
 
   updateCoins();
