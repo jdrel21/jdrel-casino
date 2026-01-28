@@ -1,3 +1,4 @@
+/* RESET & BAZĂ */
 body{
   margin:0;
   background:#0b0b0b;
@@ -6,10 +7,12 @@ body{
   text-align:center;
 }
 
+/* HEADER */
 header{
   padding:20px;
   font-size:24px;
   font-weight:bold;
+  background:#000;
 }
 
 #coins{
@@ -17,10 +20,16 @@ header{
   font-size:14px;
 }
 
+/* ZONA JOC */
 .game-area{
-  margin-top:30px;
+  margin:30px auto;
+  padding:30px 0;
+  max-width:520px;
+  background:rgba(255,255,255,0.04);
+  border-radius:18px;
 }
 
+/* BUTON START */
 .controls button{
   padding:14px 26px;
   border:none;
@@ -31,6 +40,11 @@ header{
   cursor:pointer;
 }
 
+.controls button:hover{
+  opacity:.9;
+}
+
+/* CONTAINER PAHARE */
 .cups{
   display:flex;
   justify-content:center;
@@ -38,36 +52,50 @@ header{
   margin:40px 0;
 }
 
+/* PAHARE – VERZI */
 .cup{
-  width:70px;
-  height:95px;
-  background:linear-gradient(#333,#111);
-  border-radius:0 0 22px 22px;
+  width:75px;
+  height:105px;
+  background:linear-gradient(180deg,#2ecc71,#1e7f4f);
+  border:3px solid #9bffcf;
+  border-radius:0 0 28px 28px;
   position:relative;
   cursor:pointer;
-  transition:transform .5s ease;
+  transition:transform .4s ease, box-shadow .3s ease;
+  box-shadow:0 12px 25px rgba(0,0,0,.6);
 }
 
+.cup:hover{
+  transform:translateY(-8px);
+  box-shadow:0 18px 35px rgba(0,0,0,.8);
+}
+
+/* ANIMAȚIE AMESTEC */
 .cup.shuffle{
-  transform:translateY(-12px) rotate(6deg);
+  transform:translateY(-14px) rotate(6deg);
 }
 
+/* BILA – ROȘIE */
 .ball{
-  width:18px;
-  height:18px;
-  background:#fff;
+  width:20px;
+  height:20px;
+  background:#e63946;
   border-radius:50%;
   position:absolute;
-  bottom:-24px;
-  left:26px;
+  bottom:-28px;
+  left:27px;
   display:none;
+  box-shadow:0 0 10px rgba(230,57,70,.9);
 }
 
+/* MESAJ JOC */
 .message{
-  min-height:26px;
+  min-height:28px;
   font-size:16px;
+  font-weight:bold;
 }
 
+/* FOOTER */
 footer{
   margin-top:50px;
   font-size:12px;
