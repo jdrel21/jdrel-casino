@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<title>Găsește bila – Demo Game</title>
+<title>Găsește bila</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -16,31 +16,29 @@
 
 <main class="game-area">
 
-  <div class="controls">
-    <button onclick="startGame()">Start joc (−1.000 coins)</button>
-  </div>
+  <button class="start-btn" onclick="startGame()">
+    Start joc (−1.000 coins)
+  </button>
 
-  <div class="cups">
-    <div class="cup" onclick="pick(0)"><div class="ball"></div></div>
-    <div class="cup" onclick="pick(1)"><div class="ball"></div></div>
-    <div class="cup" onclick="pick(2)"><div class="ball"></div></div>
-    <div class="cup" onclick="pick(3)"><div class="ball"></div></div>
-    <div class="cup" onclick="pick(4)"><div class="ball"></div></div>
+  <div class="cups" id="cups">
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
   </div>
 
   <div class="message" id="msg"></div>
 
 </main>
 
-<footer>
-  Joc demo · Fără bani reali · 18+
-</footer>
+<footer>Joc demo · Fără bani reali · 18+</footer>
 
 <script>
+let cups = [];
 let ballIndex = -1;
 let playing = false;
 
-// inițializare coins
 if(!localStorage.getItem("coins")){
   localStorage.setItem("coins", 100000);
 }
@@ -65,42 +63,65 @@ function startGame(){
 
   playing = true;
   document.getElementById("msg").innerText = "Amestec paharele...";
-  hideBalls();
 
-  ballIndex = Math.floor(Math.random() * 5);
+  cups = Array.from(document.querySelectorAll(".cup"));
+  cups.forEach(c=>{
+    c.classList.remove("reveal");
+    c.querySelector(".ball").style.display="none";
+  });
 
-  let cups = document.querySelectorAll(".cup");
-  cups.forEach(c => c.classList.add("shuffle"));
+  ballIndex = Math.floor(Math.random() * cups.length);
+  cups[ballIndex].querySelector(".ball").style.display="block";
 
-  setTimeout(()=>{
-    cups.forEach(c => c.classList.remove("shuffle"));
-    document.getElementById("msg").innerText = "Alege paharul!";
-  }, 1200);
+  shuffleCups(8);
 }
 
-function hideBalls(){
-  document.querySelectorAll(".ball")
-    .forEach(b => b.style.display = "none");
+function shuffleCups(times){
+  let container = document.getElementById("cups");
+  let count = 0;
+
+  let interval = setInterval(()=>{
+    let i = Math.floor(Math.random()*cups.length);
+    let j = Math.floor(Math.random()*cups.length);
+
+    if(i !== j){
+      container.insertBefore(cups[j], cups[i]);
+      cups = Array.from(container.children);
+    }
+
+    count++;
+    if(count >= times){
+      clearInterval(interval);
+      document.getElementById("msg").innerText = "Alege paharul!";
+      enablePick();
+    }
+  }, 300);
 }
 
-function pick(i){
+function enablePick(){
+  cups.forEach((cup, index)=>{
+    cup.onclick = ()=> pick(index);
+  });
+}
+
+function pick(index){
   if(!playing) return;
   playing = false;
 
-  let balls = document.querySelectorAll(".ball");
-  balls[ballIndex].style.display = "block";
+  let selected = cups[index];
+  selected.classList.add("reveal");
 
-  if(i === ballIndex){
+  if(selected.querySelector(".ball").style.display === "block"){
     let win = 5000;
     localStorage.setItem(
       "coins",
       parseInt(localStorage.getItem("coins")) + win
     );
     document.getElementById("msg").innerText =
-      "🎉 AI CÂȘTIGAT +" + win + " coins!";
+      "🎉 CÂȘTIG! +" + win + " coins";
   } else {
     document.getElementById("msg").innerText =
-      "❌ Ai pierdut. Bila era sub paharul " + (ballIndex + 1);
+      "❌ Ai pierdut!";
   }
 
   updateCoins();
