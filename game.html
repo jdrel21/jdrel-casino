@@ -1,57 +1,182 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-<meta charset="UTF-8">
-<title>Găsește bila</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
-  authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
-  projectId: "jdrel-casino-f6ea5",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// 🔒 PROTECȚIE
-onAuthStateChanged(auth, user => {
-  if (!user) window.location.href = "index.html";
-});
-
-// 🚪 LOGOUT
-window.logout = function () {
-  signOut(auth).then(() => window.location.href = "index.html");
-};
-</script>
+  <meta charset="UTF-8">
+  <title>Găsește bila</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
 <header>
-🎯 Găsește bila
-<div id="coins"></div>
+  🎯 Găsește bila
+  <div id="coins"></div>
 </header>
 
 <button class="logout" onclick="logout()">Logout</button>
 
 <main class="game-area">
-  <button class="start-btn">Start joc</button>
-  <div class="message">Demo funcțional ✅</div>
+
+  <button class="start-btn" onclick="startGame()">
+    Start joc (−1.000 coins)
+  </button>
+
+  <!-- 🔥 PAHARE -->
+  <div class="cups" id="cups">
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+  </div>
+
+  <div class="message" id="msg"></div>
+
 </main>
 
 <footer>Joc demo · Fără bani reali · 18+</footer>
 
+<!-- ================= SCRIPT JOC ================= -->
 <script>
-if(!localStorage.getItem("coins")){
-  localStorage.setItem("coins", 100000);
+/* 🔐 PROTECȚIE LOGIN */
+if(localStorage.getItem("logged") !== "true"){
+  window.location.href = "index.html";
 }
-document.getElementById("coins").innerText =
-  "💰 Sold: " + localStorage.getItem("coins");
+
+/* 💰 CONFIG */
+const START_COINS = 100000;
+const BET = 1000;
+const WIN = 5000;
+
+/* 🔧 STATE */
+let cups = Array.from(document.querySelectorAll(".cup"));
+let ballCup = null;
+let playing = false;
+
+/* 💰 COINS */
+if(!localStorage.getItem("coins")){
+  localStorage.setItem("coins", START_COINS);
+}
+updateCoins();
+
+function updateCoins(){
+  document.getElementById("coins").innerText =
+    "💰 Sold: " + localStorage.getItem("coins");
+}
+
+/* ▶ START JOC */
+function startGame(){
+  if(playing) return;
+
+  let coins = +localStorage.getItem("coins");
+  if(coins < BET){
+    alert("Nu ai suficiente coins!");
+    return;
+  }
+
+  localStorage.setItem("coins", coins - BET);
+  updateCoins();
+
+  playing = true;
+  document.getElementById("msg").innerText = "Urmărește bila…";
+
+  cups.forEach(c=>{
+    c.classList.remove("reveal");
+    c.querySelector(".ball").style.display = "none";
+    c.onclick = null;
+  });
+
+  // Afișăm bila inițial
+  const index = Math.floor(Math.random() * cups.length);
+  ballCup = cups[index];
+  ballCup.querySelector(".ball").style.display = "block";
+
+  setTimeout(()=>{
+    ballCup.querySelector(".ball").style.display = "none";
+    document.getElementById("msg").innerText = "Amestec paharele…";
+    shuffle();
+  }, 1500);
+}
+
+/* 🔄 AMESTECARE REALĂ */
+function shuffle(){
+  let rounds = 10;
+  let i = 0;
+
+  function step(){
+    if(i >= rounds){
+      document.getElementById("msg").innerText = "Alege paharul!";
+      enablePick();
+      return;
+    }
+
+    let a = Math.floor(Math.random() * cups.length);
+    let b = Math.floor(Math.random() * cups.length);
+    if(a === b){ step(); return; }
+
+    const cupA = cups[a];
+    const cupB = cups[b];
+
+    cupA.classList.add("shake");
+    cupB.classList.add("shake");
+
+    setTimeout(()=>{
+      const parent = document.getElementById("cups");
+      const next = cupA.nextSibling === cupB ? cupA : cupA.nextSibling;
+      parent.insertBefore(cupB, cupA);
+      parent.insertBefore(cupA, next);
+
+      if(ballCup === cupA) ballCup = cupB;
+      else if(ballCup === cupB) ballCup = cupA;
+
+      cups = Array.from(document.querySelectorAll(".cup"));
+
+      cupA.classList.remove("shake");
+      cupB.classList.remove("shake");
+
+      i++;
+      setTimeout(step, 120);
+    }, 300);
+  }
+
+  step();
+}
+
+/* 🖱 CLICK */
+function enablePick(){
+  cups.forEach(cup=>{
+    cup.onclick = ()=> pick(cup);
+  });
+}
+
+function pick(cup){
+  if(!playing) return;
+  playing = false;
+
+  cup.classList.add("reveal");
+  ballCup.querySelector(".ball").style.display = "block";
+
+  if(cup === ballCup){
+    localStorage.setItem("coins",
+      +localStorage.getItem("coins") + WIN
+    );
+    document.getElementById("msg").innerText =
+      "🎉 CÂȘTIG! +" + WIN + " coins";
+  } else {
+    document.getElementById("msg").innerText =
+      "❌ Ai pierdut!";
+  }
+
+  updateCoins();
+}
+
+/* 🚪 LOGOUT */
+function logout(){
+  localStorage.removeItem("logged");
+  window.location.href = "index.html";
+}
 </script>
+
 </body>
 </html>
