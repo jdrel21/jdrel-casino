@@ -38,21 +38,25 @@ header{
 .cups{
   display:flex;
   justify-content:center;
-  gap:15px;
+  gap:16px;
   margin:50px 0;
-  position:relative;
 }
 
-/* PAHAR – ORIENTARE CORECTĂ */
+/* PAHAR – ORIENTARE CORECTĂ (MIC SUS, MARE JOS) */
 .cup{
   width:75px;
   height:105px;
   background:linear-gradient(180deg,#2ecc71,#1e7f4f);
   border:3px solid #9bffcf;
-  border-radius:12px 12px 34px 34px; /* mic sus, mare jos */
+  border-radius:14px 14px 36px 36px;
   position:relative;
   cursor:pointer;
-  transition:transform .4s ease;
+  transition:transform .3s ease;
+}
+
+/* AMESTEC */
+.cup.shuffle{
+  transform:translateY(-12px);
 }
 
 /* RIDICARE */
