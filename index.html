@@ -16,11 +16,11 @@
 
 <main class="game-area">
 
-  <button class="start-btn" onclick="startGame()">
+  <button class="start-btn" id="startBtn">
     Start joc (−1.000 coins)
   </button>
 
-  <div class="cups" id="cups">
+  <div class="cups">
     <div class="cup"><div class="ball"></div></div>
     <div class="cup"><div class="ball"></div></div>
     <div class="cup"><div class="ball"></div></div>
@@ -40,13 +40,17 @@ const BET = 1000;
 const WIN = 5000;
 
 let cups = [];
-let ballIndex = 0;
+let ballIndex = -1;
 let playing = false;
 
+// init coins
 if (!localStorage.getItem("coins")) {
   localStorage.setItem("coins", START_COINS);
 }
 updateCoins();
+
+cups = Array.from(document.querySelectorAll(".cup"));
+document.getElementById("startBtn").onclick = startGame;
 
 function updateCoins(){
   document.getElementById("coins").innerText =
@@ -66,58 +70,59 @@ function startGame(){
   updateCoins();
 
   playing = true;
-  document.getElementById("msg").innerText = "Urmărește bila...";
+  document.getElementById("msg").innerText = "Urmărește bila…";
 
-  cups = Array.from(document.querySelectorAll(".cup"));
-
-  // reset complet
+  // reset total
   cups.forEach(c=>{
     c.classList.remove("reveal");
-    c.style.transform = "translateX(0)";
+    c.classList.remove("shuffle");
     c.querySelector(".ball").style.display = "none";
   });
 
-  // arată bila 1 secundă
+  // 1️⃣ arătăm bila
   ballIndex = Math.floor(Math.random() * cups.length);
   cups[ballIndex].querySelector(".ball").style.display = "block";
 
+  // 2️⃣ ascundem bila și amestecăm
   setTimeout(()=>{
     cups[ballIndex].querySelector(".ball").style.display = "none";
-    document.getElementById("msg").innerText = "Amestec paharele...";
-    shuffle();
-  }, 1000);
+    document.getElementById("msg").innerText = "Amestec paharele…";
+    shuffleCups();
+  }, 1500);
 }
 
-function shuffle(){
+function shuffleCups(){
   let rounds = 6;
-  let step = 90;
-
-  let order = [...cups];
-
   let i = 0;
-  let interval = setInterval(()=>{
-    order.sort(() => Math.random() - 0.5);
 
-    order.forEach((cup, idx)=>{
-      cup.style.transform = `translateX(${(idx - 2) * step}px)`;
-    });
+  let interval = setInterval(()=>{
+    cups.forEach(c=>c.classList.add("shuffle"));
+
+    // schimbăm ORDINEA în DOM (fără să iasă din ecran)
+    let parent = document.querySelector(".cups");
+    cups.sort(() => Math.random() - 0.5);
+    cups.forEach(c => parent.appendChild(c));
+
+    setTimeout(()=>{
+      cups.forEach(c=>c.classList.remove("shuffle"));
+    }, 200);
 
     i++;
     if(i >= rounds){
       clearInterval(interval);
       document.getElementById("msg").innerText = "Alege paharul!";
-      enablePick(order);
+      enablePick();
     }
   }, 350);
 }
 
-function enablePick(order){
-  order.forEach(cup=>{
-    cup.onclick = ()=> pick(cup, order);
+function enablePick(){
+  cups.forEach(cup=>{
+    cup.onclick = ()=> pickCup(cup);
   });
 }
 
-function pick(cup, order){
+function pickCup(cup){
   if(!playing) return;
   playing = false;
 
@@ -132,8 +137,7 @@ function pick(cup, order){
     document.getElementById("msg").innerText =
       "🎉 CÂȘTIG! +" + WIN + " coins";
   } else {
-    document.getElementById("msg").innerText =
-      "❌ Ai pierdut!";
+    document.getElementById("msg").innerText = "❌ Ai pierdut!";
   }
 
   updateCoins();
