@@ -1,163 +1,30 @@
-/* ===== RESET + GLOBAL ===== */
-*{
-  box-sizing:border-box;
-}
-
 body{
   margin:0;
-  min-height:100vh;
-  background:radial-gradient(circle at top, #1a1a1a, #000);
+  background:#0b0b0b;
   color:#f5d36c;
-  font-family:Arial, sans-serif;
+  font-family:Arial;
   text-align:center;
 }
-
-/* ===== HEADER ===== */
-header{
-  padding:20px;
-  font-size:24px;
-  font-weight:bold;
-}
-
-#coins{
-  margin-top:6px;
-  font-size:14px;
-}
-
-/* ===== GAME AREA ===== */
-.game-area{
-  margin:30px auto;
-  max-width:520px;
-  padding:30px 20px;
-  background:rgba(255,255,255,0.05);
-  border-radius:18px;
-}
-
-/* ===== BUTTONS ===== */
-.start-btn,
-.auth-box button{
-  padding:14px 28px;
-  border:none;
-  border-radius:999px;
-  background:linear-gradient(135deg,#f5d36c,#c9a83f);
-  color:#000;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.start-btn{
-  margin-bottom:20px;
-}
-
-/* ===== CUPS GRID (STABIL) ===== */
-.cups{
-  display:grid;
-  grid-template-columns:repeat(5, 1fr);
-  gap:14px;
-  margin:40px 0;
-}
-
-/* ===== CUP – GURA ÎN JOS ===== */
-.cup{
-  height:110px;
-  background:
-    repeating-linear-gradient(
-      135deg,
-      #2ecc71 0px,
-      #2ecc71 6px,
-      #27ae60 6px,
-      #27ae60 12px
-    );
-  border:3px solid #a8ffd5;
-  border-radius:36px 36px 14px 14px; /* partea mare SUS */
-  position:relative;
-  cursor:pointer;
-  transition:transform .35s ease;
-}
-
-/* ANIMAȚIE AMESTECARE */
-.cup.shake{
-  transform:translateY(-10px);
-}
-
-/* RIDICARE LA ALEGERE */
-.cup.reveal{
-  transform:translateY(-55px);
-}
-
-/* ===== BILA ===== */
-.ball{
-  width:18px;
-  height:18px;
-  background:#e63946;
-  border-radius:50%;
-  position:absolute;
-  bottom:-26px;
-  left:50%;
-  transform:translateX(-50%);
-  display:none;
-  box-shadow:0 0 12px rgba(230,57,70,.9);
-}
-
-/* ===== MESSAGE ===== */
-.message{
-  min-height:28px;
-  font-size:16px;
-  font-weight:bold;
-  margin-top:10px;
-}
-
-/* ===== FOOTER ===== */
-footer{
-  margin:40px 0 20px;
-  font-size:12px;
-  opacity:.6;
-}
-
-/* ===== AUTH (LOGIN / REGISTER) ===== */
 .auth-box{
   max-width:320px;
   margin:100px auto;
   padding:25px;
   background:#111;
   border-radius:14px;
-  box-shadow:0 0 30px rgba(0,0,0,.7);
 }
-
-.auth-box h2{
-  margin-bottom:20px;
-}
-
-.auth-box input{
+.auth-box input, button{
   width:100%;
   padding:12px;
   margin-bottom:12px;
-  border-radius:8px;
+}
+button{
   border:none;
-  outline:none;
+  border-radius:999px;
+  background:#f5d36c;
+  font-weight:bold;
 }
-
-.auth-link{
-  margin-top:12px;
-  font-size:14px;
-}
-
-.bonus{
-  color:#2ecc71;
-  margin-top:10px;
-}
-
-/* ===== LOGOUT BUTTON ===== */
 .logout{
   position:fixed;
   top:15px;
   right:15px;
-  padding:8px 16px;
-  border:none;
-  border-radius:999px;
-  background:#e63946;
-  color:#fff;
-  font-weight:bold;
-  cursor:pointer;
-  z-index:999;
 }
