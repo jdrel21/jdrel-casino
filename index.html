@@ -1,55 +1,111 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <title>Jdrel Casino</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Găsește bila – Demo Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <header>
-  <h1>JDREL CASINO</h1>
-<nav class="menu">
-  <a href="index.html">Acasă</a>
-  <a href="despre.html">Despre</a>
-  <a href="termeni.html">Termeni</a>
-  <a href="contact.html">Contact</a>
-
-  <div class="dropdown">
-    <span>Jocuri ▾</span>
-    <div class="dropdown-content">
-      <a href="games-pragmatic.html">Pragmatic Play</a>
-      <a href="games-playngo.html">Play’n GO</a>
-      <a href="games-netent.html">NetEnt</a>
-      <a href="games-novomatic.html">Novomatic</a>
-      <a href="games-microgaming.html">Microgaming</a>
-      <a href="games-playtech.html">Playtech</a>
-      <a href="games-yggdrasil.html">Yggdrasil</a>
-      <a href="games-quickspin.html">Quickspin</a>
-      <a href="games-amusnet.html">Amusnet (EGT)</a>
-    </div>
-  </div>
-
-  <div class="auth">
-    <a href="login.html" class="login-btn">Login</a>
-    <a href="register.html" class="register-btn">Register</a>
-  </div>
-</nav>
+  🎯 Găsește bila
+  <div id="coins">💰 Sold: 0 coins</div>
 </header>
 
-<section class="hero">
-  <h2>Experiență premium de divertisment online</h2>
-  <p>Platformă modernă. Distracție responsabilă. Design de top.</p>
+<main class="game-area">
 
-  <div class="cta">
-    <a href="#">Intră pe platformă</a>
+  <div class="controls">
+    <button onclick="startGame()">Start joc (−1.000 coins)</button>
   </div>
-</section>
+
+  <div class="cups">
+    <div class="cup" onclick="pick(0)"><div class="ball"></div></div>
+    <div class="cup" onclick="pick(1)"><div class="ball"></div></div>
+    <div class="cup" onclick="pick(2)"><div class="ball"></div></div>
+    <div class="cup" onclick="pick(3)"><div class="ball"></div></div>
+    <div class="cup" onclick="pick(4)"><div class="ball"></div></div>
+  </div>
+
+  <div class="message" id="msg"></div>
+
+</main>
 
 <footer>
-  © 2026 Lady Casino · Joacă responsabil · 18+
+  Joc demo · Fără bani reali · 18+
 </footer>
+
+<script>
+let ballIndex = -1;
+let playing = false;
+
+// inițializare coins
+if(!localStorage.getItem("coins")){
+  localStorage.setItem("coins", 100000);
+}
+updateCoins();
+
+function updateCoins(){
+  document.getElementById("coins").innerText =
+    "💰 Sold: " + localStorage.getItem("coins") + " coins";
+}
+
+function startGame(){
+  if(playing) return;
+
+  let coins = parseInt(localStorage.getItem("coins"));
+  if(coins < 1000){
+    alert("Nu ai suficiente coins!");
+    return;
+  }
+
+  localStorage.setItem("coins", coins - 1000);
+  updateCoins();
+
+  playing = true;
+  document.getElementById("msg").innerText = "Amestec paharele...";
+  hideBalls();
+
+  ballIndex = Math.floor(Math.random() * 5);
+
+  let cups = document.querySelectorAll(".cup");
+  cups.forEach(c => c.classList.add("shuffle"));
+
+  setTimeout(()=>{
+    cups.forEach(c => c.classList.remove("shuffle"));
+    document.getElementById("msg").innerText = "Alege paharul!";
+  }, 1200);
+}
+
+function hideBalls(){
+  document.querySelectorAll(".ball")
+    .forEach(b => b.style.display = "none");
+}
+
+function pick(i){
+  if(!playing) return;
+  playing = false;
+
+  let balls = document.querySelectorAll(".ball");
+  balls[ballIndex].style.display = "block";
+
+  if(i === ballIndex){
+    let win = 5000;
+    localStorage.setItem(
+      "coins",
+      parseInt(localStorage.getItem("coins")) + win
+    );
+    document.getElementById("msg").innerText =
+      "🎉 AI CÂȘTIGAT +" + win + " coins!";
+  } else {
+    document.getElementById("msg").innerText =
+      "❌ Ai pierdut. Bila era sub paharul " + (ballIndex + 1);
+  }
+
+  updateCoins();
+}
+</script>
 
 </body>
 </html>
