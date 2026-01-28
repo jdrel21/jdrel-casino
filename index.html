@@ -1,70 +1,47 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <title>Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
 
-  <!-- 🔥 FIREBASE COMPAT (CORECT PENTRU GITHUB PAGES) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
-      authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
-      projectId: "jdrel-casino-f6ea5",
-      storageBucket: "jdrel-casino-f6ea5.appspot.com",
-      messagingSenderId: "727303157636",
-      appId: "1:727303157636:web:5aeb72d5adf7098efe0fd1"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
+  authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
+  projectId: "jdrel-casino-f6ea5",
+};
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-    console.log("Firebase OK");
-  </script>
+onAuthStateChanged(auth, user => {
+  if (user) window.location.href = "game.html";
+});
+
+window.login = function () {
+  const email = document.getElementById("loginUser").value;
+  const pass = document.getElementById("loginPass").value;
+
+  signInWithEmailAndPassword(auth, email, pass)
+    .then(() => window.location.href = "game.html")
+    .catch(err => document.getElementById("msg").innerText = "❌ " + err.message);
+};
+</script>
 </head>
 
 <body>
-
-  <div class="auth-box">
-    <h2>Autentificare</h2>
-
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPass" placeholder="Parolă">
-
-    <button onclick="login()">Login</button>
-
-    <p class="auth-link">
-      Nu ai cont? <a href="register.html">Înregistrează-te</a>
-    </p>
-
-    <div id="msg"></div>
-  </div>
-
-  <!-- 🔽 SCRIPT LOGIN (JOS) -->
-  <script>
-    function login(){
-      const email = document.getElementById("loginEmail").value;
-      const pass  = document.getElementById("loginPass").value;
-      const msg   = document.getElementById("msg");
-
-      msg.innerText = "⏳ Se autentifică...";
-
-      auth.signInWithEmailAndPassword(email, pass)
-        .then(() => {
-          msg.innerText = "✅ Login reușit!";
-          setTimeout(() => {
-            window.location.href = "game.html";
-          }, 500);
-        })
-        .catch(err => {
-          msg.innerText = "❌ " + err.message;
-        });
-    }
-  </script>
-
+<div class="auth-box">
+  <h2>Autentificare</h2>
+  <input type="email" id="loginUser" placeholder="Email">
+  <input type="password" id="loginPass" placeholder="Parolă">
+  <button onclick="login()">Login</button>
+  <p class="auth-link">Nu ai cont? <a href="register.html">Register</a></p>
+  <div id="msg"></div>
+</div>
 </body>
 </html>
