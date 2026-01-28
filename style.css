@@ -140,3 +140,33 @@ nav a:hover { color: var(--neon); }
 .profile-card img{
   border-radius:50%; box-shadow:0 0 15px var(--neon);
 }
+.dropdown {
+  position: relative;
+  margin-right: 16px;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background: #111;
+  min-width: 160px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.6);
+  z-index: 10;
+}
+
+.dropdown-content a {
+  display: block;
+  padding: 10px 14px;
+  color: #fff;
+  text-decoration: none;
+}
+
+.dropdown-content a:hover {
+  background: #222;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  }
