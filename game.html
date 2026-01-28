@@ -34,6 +34,15 @@
 </head>
 
 <body>
+  <script>
+auth.onAuthStateChanged(user => {
+  if (user) {
+    console.log("LOGAT:", user.email);
+  } else {
+    console.log("NU e nimeni logat");
+  }
+});
+</script>
 
 <header>
   🎯 Găsește bila
