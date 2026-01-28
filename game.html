@@ -9,26 +9,31 @@
 <!-- Firebase COMPAT -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
-    authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
-    projectId: "jdrel-casino-f6ea5",
-    appId: "1:727303157636:web:5aeb72d5adf7098efe0fd1"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
+const firebaseConfig = {
+  apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
+  authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
+  projectId: "jdrel-casino-f6ea5",
+  storageBucket: "jdrel-casino-f6ea5.appspot.com",
+  messagingSenderId: "727303157636",
+  appId: "1:727303157636:web:5aeb72d5adf7098efe0fd1"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 </script>
 </head>
 
 <body>
 
 <header>
-🎯 Găsește bila
-<button class="logout" onclick="logout()">Logout</button>
+  🎯 Găsește bila
+  <button class="logout" onclick="logout()">Logout</button>
 </header>
 
 <main class="game-area">
+
 <button class="start-btn" onclick="startGame()">Start joc</button>
 
 <div class="cups" id="cups">
@@ -40,12 +45,16 @@
 </div>
 
 <div class="message" id="msg"></div>
+
 </main>
 
-<footer>Demo · Firebase · 18+</footer>
+<footer>Joc demo · Firebase · 18+</footer>
 
 <script>
-/* 🔐 PROTECȚIE */
+let cups = [...document.querySelectorAll(".cup")];
+let ballIndex = 0;
+let playing = false;
+
 auth.onAuthStateChanged(user=>{
   if(!user) window.location.href="index.html";
 });
@@ -54,80 +63,75 @@ function logout(){
   auth.signOut().then(()=>window.location.href="index.html");
 }
 
-/* 🎮 LOGICĂ JOC */
-const cups = Array.from(document.querySelectorAll(".cup"));
-let ballCup = null;   // 🔑 AICI e cheia
-let playing = false;
-
 function startGame(){
   if(playing) return;
   playing = true;
-  msg.innerText = "Urmărește bila";
+  msg.innerText = "Urmărește bila…";
 
-  // reset
   cups.forEach(c=>{
-    c.querySelector(".ball").style.display = "none";
-    c.onclick = null;
+    c.classList.remove("reveal");
+    c.querySelector(".ball").style.display="none";
+    c.onclick=null;
   });
 
-  // alegem paharul cu bila
-  ballCup = cups[Math.floor(Math.random()*cups.length)];
-  ballCup.querySelector(".ball").style.display = "block";
-
-  // ascundem bila și amestecăm
-  setTimeout(()=>{
-    ballCup.querySelector(".ball").style.display = "none";
-    shuffle(8);
-  },1500);
-}
-
-/* 🔄 AMESTECARE CORECTĂ + MUTARE BILĂ */
-function shuffle(times){
-  if(times === 0){
-    msg.innerText = "Alege paharul!";
-    cups.forEach(c=>c.onclick = ()=>pick(c));
-    playing = false;
-    return;
-  }
-
-  let a = Math.floor(Math.random()*cups.length);
-  let b = Math.floor(Math.random()*cups.length);
-  if(a === b) return shuffle(times);
-
-  const cupA = cups[a];
-  const cupB = cups[b];
-
-  // animație
-  cupA.style.transform = "translateX(60px)";
-  cupB.style.transform = "translateX(-60px)";
+  ballIndex = Math.floor(Math.random()*cups.length);
+  cups[ballIndex].querySelector(".ball").style.display="block";
 
   setTimeout(()=>{
-    // swap în DOM
-    const parent = cupA.parentNode;
-    const next = cupA.nextSibling === cupB ? cupA : cupA.nextSibling;
-    parent.insertBefore(cupB, cupA);
-    parent.insertBefore(cupA, next);
-
-    // 🔑 dacă bila era sub unul din ele, MUTĂ REFERINȚA
-    if(ballCup === cupA) ballCup = cupB;
-    else if(ballCup === cupB) ballCup = cupA;
-
-    // reset vizual
-    cups.forEach(c=>c.style.transform="translateX(0)");
-
-    setTimeout(()=>shuffle(times-1),200);
-  },300);
+    cups[ballIndex].querySelector(".ball").style.display="none";
+    shuffle();
+  },1200);
 }
 
-/* 🖱 ALEGERE */
-function pick(cup){
-  cup.querySelector(".ball").style.display = "block";
+function shuffle(){
+  let moves = 10;
+  let i = 0;
 
-  if(cup === ballCup){
-    msg.innerText = "🎉 CÂȘTIG!";
-  } else {
-    msg.innerText = "❌ AI PIERDUT";
+  function step(){
+    if(i>=moves){
+      enablePick();
+      msg.innerText="Alege paharul!";
+      return;
+    }
+
+    let a = Math.floor(Math.random()*cups.length);
+    let b = Math.floor(Math.random()*cups.length);
+    if(a===b) return step();
+
+    const cupA = cups[a];
+    const cupB = cups[b];
+
+    cupA.classList.add("swap-left");
+    cupB.classList.add("swap-right");
+
+    setTimeout(()=>{
+      cupA.classList.remove("swap-left");
+      cupB.classList.remove("swap-right");
+
+      [cups[a],cups[b]]=[cups[b],cups[a]];
+      if(ballIndex===a) ballIndex=b;
+      else if(ballIndex===b) ballIndex=a;
+
+      cups.forEach(c=>cupsContainer.appendChild(c));
+      i++;
+      step();
+    },350);
   }
+
+  const cupsContainer=document.getElementById("cups");
+  step();
+}
+
+function enablePick(){
+  cups.forEach((cup,i)=>{
+    cup.onclick=()=>{
+      if(!playing) return;
+      playing=false;
+      cup.classList.add("reveal");
+      cups[ballIndex].querySelector(".ball").style.display="block";
+      msg.innerText = (i===ballIndex) ? "🎉 CÂȘTIG!" : "❌ AI PIERDUT";
+    }
+  });
 }
 </script>
 
