@@ -1,78 +1,47 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <title>Register</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Register</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
 
-  <!-- 🔥 FIREBASE COMPAT -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
-      authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
-      projectId: "jdrel-casino-f6ea5",
-      storageBucket: "jdrel-casino-f6ea5.appspot.com",
-      messagingSenderId: "727303157636",
-      appId: "1:727303157636:web:5aeb72d5adf7098efe0fd1"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
+  authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
+  projectId: "jdrel-casino-f6ea5",
+};
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-  </script>
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.register = function () {
+  const email = document.getElementById("regUser").value;
+  const pass = document.getElementById("regPass").value;
+
+  createUserWithEmailAndPassword(auth, email, pass)
+    .then(() => {
+      localStorage.setItem("coins", 100000);
+      window.location.href = "game.html";
+    })
+    .catch(err => document.getElementById("msg").innerText = "❌ " + err.message);
+};
+</script>
 </head>
 
 <body>
-
-  <div class="auth-box">
-    <h2>Înregistrare</h2>
-
-    <input type="email" id="regEmail" placeholder="Email">
-    <input type="password" id="regPass" placeholder="Parolă (minim 6 caractere)">
-
-    <button onclick="register()">Creează cont</button>
-
-    <p class="bonus">🎁 Bonus: 100.000 coins DEMO</p>
-
-    <p class="auth-link">
-      Ai cont? <a href="login.html">Login</a>
-    </p>
-
-    <div id="msg"></div>
-  </div>
-
-  <!-- 🔽 SCRIPT REGISTER -->
-  <script>
-    function register(){
-      const email = document.getElementById("regEmail").value;
-      const pass  = document.getElementById("regPass").value;
-      const msg   = document.getElementById("msg");
-
-      if(pass.length < 6){
-        msg.innerText = "❌ Parola trebuie să aibă minim 6 caractere";
-        return;
-      }
-
-      msg.innerText = "⏳ Se creează contul...";
-
-      auth.createUserWithEmailAndPassword(email, pass)
-        .then(() => {
-          // 🎁 bonus DEMO
-          localStorage.setItem("coins", 100000);
-
-          msg.innerText = "✅ Cont creat cu succes!";
-          setTimeout(() => {
-            window.location.href = "game.html";
-          }, 500);
-        })
-        .catch(err => {
-          msg.innerText = "❌ " + err.message;
-        });
-    }
-  </script>
-
+<div class="auth-box">
+  <h2>Înregistrare</h2>
+  <input type="email" id="regUser" placeholder="Email">
+  <input type="password" id="regPass" placeholder="Parolă">
+  <button onclick="register()">Creează cont</button>
+  <p class="bonus">🎁 Bonus: 100.000 coins</p>
+  <p class="auth-link">Ai cont? <a href="index.html">Login</a></p>
+  <div id="msg"></div>
+</div>
 </body>
 </html>
