@@ -80,11 +80,11 @@ function startGame(){
   setTimeout(()=>{
     cups[ballIndex].querySelector(".ball").style.display="none";
     shuffle();
-  },700);
+  },1000);
 }
 
 function shuffle(){
-  let moves = 6;
+  let moves = 8;
   let i = 0;
 
   function step(){
@@ -118,7 +118,7 @@ else if(ballIndex === b) ballIndex = a;
       cups.forEach(c=>cupsContainer.appendChild(c));
       i++;
       step();
-    },200);
+    },270);
   }
 
   const cupsContainer=document.getElementById("cups");
