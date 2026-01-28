@@ -35,38 +35,36 @@ header{
   cursor:pointer;
 }
 
-/* CONTAINER */
-  .cups{
+/* CONTAINER PAHARE */
+.cups{
   position:relative;
   height:160px;
   width:100%;
   max-width:520px;
   margin:50px auto;
-  }
-/* PAHAR CORECT (GURA JOS) */
+}
+
+/* PAHAR CORECT (PARTEA MARE JOS) */
 .cup{
   width:75px;
   height:105px;
   background:linear-gradient(180deg,#2ecc71,#1e7f4f);
   border:3px solid #9bffcf;
-
-  /* SUS MIC, JOS MARE */
-  border-radius:12px 12px 32px 32px;
-
+  border-radius:14px 14px 34px 34px;
   position:absolute;
   bottom:0;
   left:50%;
   transform:translateX(-50%);
-  transition:transform .4s ease;
+  transition:transform .35s ease;
   cursor:pointer;
 }
 
-/* RIDICARE */
+/* RIDICARE LA ALEGERE */
 .cup.reveal{
   transform:translateX(-50%) translateY(-50px);
 }
 
-/* BILA */
+/* BILA (ROȘIE, ASCUNSĂ) */
 .ball{
   width:18px;
   height:18px;
