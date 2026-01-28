@@ -80,11 +80,11 @@ function startGame(){
   setTimeout(()=>{
     cups[ballIndex].querySelector(".ball").style.display="none";
     shuffle();
-  },1200);
+  },700);
 }
 
 function shuffle(){
-  let moves = 10;
+  let moves = 6;
   let i = 0;
 
   function step(){
@@ -100,6 +100,9 @@ function shuffle(){
 
     const cupA = cups[a];
     const cupB = cups[b];
+    
+    if(ballIndex === a) ballIndex = b;
+else if(ballIndex === b) ballIndex = a;
 
     cupA.classList.add("swap-left");
     cupB.classList.add("swap-right");
@@ -115,7 +118,7 @@ function shuffle(){
       cups.forEach(c=>cupsContainer.appendChild(c));
       i++;
       step();
-    },350);
+    },200);
   }
 
   const cupsContainer=document.getElementById("cups");
