@@ -111,3 +111,32 @@ footer {
   transform: scale(1.06);
   filter: brightness(1.05);
 }
+/* Neon accents */
+:root{
+  --gold:#d4af37;
+  --neon:#00ffd5;
+}
+
+header h1, nav a { color: var(--gold); }
+nav a:hover { color: var(--neon); }
+
+.filters{
+  display:flex; gap:10px; justify-content:center; padding:20px;
+}
+.filters button{
+  background:#111; color:#fff; border:1px solid #222;
+  padding:10px 16px; border-radius:999px; cursor:pointer;
+}
+.filters button:hover{
+  box-shadow:0 0 10px var(--neon);
+  border-color:var(--neon);
+}
+
+.profile-card{
+  max-width:320px; margin:20px auto; padding:20px;
+  background:#0f0f0f; border-radius:16px; text-align:center;
+  box-shadow:0 0 25px rgba(0,255,213,.15);
+}
+.profile-card img{
+  border-radius:50%; box-shadow:0 0 15px var(--neon);
+}
