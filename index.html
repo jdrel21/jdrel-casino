@@ -16,16 +16,16 @@
 
 <main class="game-area">
 
-  <button class="start-btn" id="startBtn">
+  <button class="start-btn" onclick="startGame()">
     Start joc (−1.000 coins)
   </button>
 
-  <div class="cups-track" id="track">
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
+  <div class="cups" id="cups">
+    <div class="cup" data-pos="0"><div class="ball"></div></div>
+    <div class="cup" data-pos="1"><div class="ball"></div></div>
+    <div class="cup" data-pos="2"><div class="ball"></div></div>
+    <div class="cup" data-pos="3"><div class="ball"></div></div>
+    <div class="cup" data-pos="4"><div class="ball"></div></div>
   </div>
 
   <div class="message" id="msg"></div>
@@ -39,59 +39,18 @@ const START_COINS = 100000;
 const BET = 1000;
 const WIN = 5000;
 
-let cups = [];
-let positions = [];
+let cups = Array.from(document.querySelectorAll(".cup"));
 let ballIndex = -1;
 let playing = false;
 
-// init
-if (!localStorage.getItem("coins")) {
+if(!localStorage.getItem("coins")){
   localStorage.setItem("coins", START_COINS);
 }
 updateCoins();
 
-cups = Array.from(document.querySelectorAll(".cup"));
-document.getElementById("startBtn").onclick = startGame;
-
 function updateCoins(){
   document.getElementById("coins").innerText =
     "💰 Sold: " + localStorage.getItem("coins") + " coins";
-}
-
-// poziții fixe pe axa X
-function setInitialPositions(){
-  const gap = 90;
-  const center = Math.floor(cups.length / 2);
-
-  cups.forEach((cup, i)=>{
-    positions[i] = (i - center) * gap;
-    cup.style.transform = `translateX(${positions[i]}px)`;
-  });
-}
-
-// shuffle REAL (swap poziții)
-function shuffleAnimation(rounds = 8){
-  let i = 0;
-
-  let interval = setInterval(()=>{
-    let a = Math.floor(Math.random() * cups.length);
-    let b = Math.floor(Math.random() * cups.length);
-    if(a === b) return;
-
-    // swap poziții
-    [positions[a], positions[b]] = [positions[b], positions[a]];
-
-    cups.forEach((cup, idx)=>{
-      cup.style.transform = `translateX(${positions[idx]}px)`;
-    });
-
-    i++;
-    if(i >= rounds){
-      clearInterval(interval);
-      document.getElementById("msg").innerText = "Alege paharul!";
-      enablePick();
-    }
-  }, 350);
 }
 
 function startGame(){
@@ -112,10 +71,7 @@ function startGame(){
   cups.forEach(c=>{
     c.classList.remove("reveal");
     c.querySelector(".ball").style.display = "none";
-    c.onclick = null;
   });
-
-  setInitialPositions();
 
   // arătăm bila
   ballIndex = Math.floor(Math.random() * cups.length);
@@ -124,17 +80,46 @@ function startGame(){
   setTimeout(()=>{
     cups[ballIndex].querySelector(".ball").style.display = "none";
     document.getElementById("msg").innerText = "Amestec paharele…";
-    shuffleAnimation();
+    shuffle();
   }, 1500);
+}
+
+function shuffle(){
+  let rounds = 6;
+  let i = 0;
+
+  let interval = setInterval(()=>{
+    let a = Math.floor(Math.random() * cups.length);
+    let b = Math.floor(Math.random() * cups.length);
+    if(a === b) return;
+
+    // swap în DOM (GRID se ocupă de poziție)
+    const parent = document.getElementById("cups");
+    parent.insertBefore(cups[b], cups[a]);
+
+    cups = Array.from(document.querySelectorAll(".cup"));
+    cups.forEach(c => c.classList.add("shake"));
+
+    setTimeout(()=>{
+      cups.forEach(c => c.classList.remove("shake"));
+    }, 200);
+
+    i++;
+    if(i >= rounds){
+      clearInterval(interval);
+      document.getElementById("msg").innerText = "Alege paharul!";
+      enablePick();
+    }
+  }, 350);
 }
 
 function enablePick(){
   cups.forEach((cup, index)=>{
-    cup.onclick = ()=> pickCup(index);
+    cup.onclick = ()=> pick(index);
   });
 }
 
-function pickCup(index){
+function pick(index){
   if(!playing) return;
   playing = false;
 
@@ -149,8 +134,7 @@ function pickCup(index){
     document.getElementById("msg").innerText =
       "🎉 CÂȘTIG! +" + WIN + " coins";
   } else {
-    document.getElementById("msg").innerText =
-      "❌ Ai pierdut!";
+    document.getElementById("msg").innerText = "❌ Ai pierdut!";
   }
 
   updateCoins();
