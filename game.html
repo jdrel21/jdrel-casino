@@ -35,6 +35,10 @@
 <footer>Joc demo · Fără bani reali · 18+</footer>
 
 <script>
+if(localStorage.getItem("logged") !== "true"){
+  window.location.href = "index.html";
+}
+  
 const START_COINS = 100000;
 const BET = 1000;
 const WIN = 5000;
