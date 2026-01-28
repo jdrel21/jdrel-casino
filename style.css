@@ -35,6 +35,7 @@ header{
   cursor:pointer;
 }
 
+/* CONTAINER */
 .cups{
   display:flex;
   justify-content:center;
@@ -42,7 +43,7 @@ header{
   margin:50px 0;
 }
 
-/* PAHAR – ORIENTARE CORECTĂ (MIC SUS, MARE JOS) */
+/* PAHAR – CORECT (MIC SUS, MARE JOS) */
 .cup{
   width:75px;
   height:105px;
@@ -54,9 +55,15 @@ header{
   transition:transform .3s ease;
 }
 
-/* AMESTEC */
+/* AMESTEC (SHAKE) */
 .cup.shuffle{
-  transform:translateY(-12px);
+  animation: shake .3s ease;
+}
+
+@keyframes shake{
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
 }
 
 /* RIDICARE */
