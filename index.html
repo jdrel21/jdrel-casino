@@ -21,11 +21,11 @@
   </button>
 
   <div class="cups" id="cups">
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
+    <div class="cup" data-index="0"><div class="ball"></div></div>
+    <div class="cup" data-index="1"><div class="ball"></div></div>
+    <div class="cup" data-index="2"><div class="ball"></div></div>
+    <div class="cup" data-index="3"><div class="ball"></div></div>
+    <div class="cup" data-index="4"><div class="ball"></div></div>
   </div>
 
   <div class="message" id="msg"></div>
@@ -65,32 +65,33 @@ function startGame(){
   document.getElementById("msg").innerText = "Amestec paharele...";
 
   cups = Array.from(document.querySelectorAll(".cup"));
+
+  // reset total
   cups.forEach(c=>{
     c.classList.remove("reveal");
-    c.querySelector(".ball").style.display="none";
+    c.querySelector(".ball").style.display = "none";
   });
 
+  // ALEGEM UN PAHAR, DAR NU AFIȘĂM BILA
   ballIndex = Math.floor(Math.random() * cups.length);
-  cups[ballIndex].querySelector(".ball").style.display="block";
 
-  shuffleCups(8);
+  shuffleAnimation();
 }
 
-function shuffleCups(times){
-  let container = document.getElementById("cups");
-  let count = 0;
+function shuffleAnimation(){
+  let moves = 8;
+  let i = 0;
 
   let interval = setInterval(()=>{
-    let i = Math.floor(Math.random()*cups.length);
-    let j = Math.floor(Math.random()*cups.length);
+    cups.forEach((cup, idx)=>{
+      let offset = (idx - 2) * 90;
+      cup.style.transform = `translateX(${offset}px)`;
+    });
 
-    if(i !== j){
-      container.insertBefore(cups[j], cups[i]);
-      cups = Array.from(container.children);
-    }
+    cups.sort(() => Math.random() - 0.5);
 
-    count++;
-    if(count >= times){
+    i++;
+    if(i >= moves){
       clearInterval(interval);
       document.getElementById("msg").innerText = "Alege paharul!";
       enablePick();
@@ -99,26 +100,27 @@ function shuffleCups(times){
 }
 
 function enablePick(){
-  cups.forEach((cup, index)=>{
-    cup.onclick = ()=> pick(index);
+  cups.forEach((cup)=>{
+    cup.onclick = ()=> pick(cup);
   });
 }
 
-function pick(index){
+function pick(cup){
   if(!playing) return;
   playing = false;
 
-  let selected = cups[index];
-  selected.classList.add("reveal");
+  cup.classList.add("reveal");
 
-  if(selected.querySelector(".ball").style.display === "block"){
+  // ACUM afișăm bila
+  cups[ballIndex].querySelector(".ball").style.display = "block";
+
+  if(cup === cups[ballIndex]){
     let win = 5000;
-    localStorage.setItem(
-      "coins",
+    localStorage.setItem("coins",
       parseInt(localStorage.getItem("coins")) + win
     );
     document.getElementById("msg").innerText =
-      "🎉 CÂȘTIG! +" + win + " coins";
+      "🎉 AI CÂȘTIGAT +" + win + " coins!";
   } else {
     document.getElementById("msg").innerText =
       "❌ Ai pierdut!";
