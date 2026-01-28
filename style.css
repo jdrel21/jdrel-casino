@@ -2,29 +2,112 @@ body{
   margin:0;
   background:#0b0b0b;
   color:#f5d36c;
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   text-align:center;
 }
-.auth-box{
-  max-width:320px;
-  margin:100px auto;
-  padding:25px;
-  background:#111;
-  border-radius:14px;
-}
-.auth-box input, button{
-  width:100%;
-  padding:12px;
-  margin-bottom:12px;
-}
-button{
-  border:none;
-  border-radius:999px;
-  background:#f5d36c;
+
+/* HEADER */
+header{
+  padding:20px;
+  font-size:24px;
   font-weight:bold;
 }
+
+#coins{
+  margin-top:6px;
+  font-size:14px;
+}
+
+/* LOGOUT */
 .logout{
   position:fixed;
   top:15px;
   right:15px;
+  padding:8px 16px;
+  border:none;
+  border-radius:999px;
+  background:#e63946;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  z-index:999;
+}
+
+/* JOC */
+.game-area{
+  margin:30px auto;
+  max-width:520px;
+  padding:30px 0;
+  background:rgba(255,255,255,0.04);
+  border-radius:18px;
+}
+
+.start-btn{
+  padding:14px 28px;
+  border:none;
+  border-radius:999px;
+  background:linear-gradient(135deg,#f5d36c,#c9a83f);
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* PAHARE */
+.cups{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:14px;
+  margin:50px 0;
+}
+
+.cup{
+  height:110px;
+  background:
+    repeating-linear-gradient(
+      135deg,
+      #2ecc71 0px,
+      #2ecc71 6px,
+      #27ae60 6px,
+      #27ae60 12px
+    );
+  border:3px solid #a8ffd5;
+  border-radius:36px 36px 14px 14px;
+  position:relative;
+  cursor:pointer;
+  transition:transform .3s ease;
+}
+
+/* ANIMAȚII */
+.cup.shake{
+  transform:translateY(-8px);
+}
+
+.cup.reveal{
+  transform:translateY(-50px);
+}
+
+/* BILĂ */
+.ball{
+  width:18px;
+  height:18px;
+  background:#e63946;
+  border-radius:50%;
+  position:absolute;
+  bottom:-26px;
+  left:50%;
+  transform:translateX(-50%);
+  display:none;
+  box-shadow:0 0 10px rgba(230,57,70,.9);
+}
+
+.message{
+  min-height:28px;
+  font-size:16px;
+  font-weight:bold;
+}
+
+footer{
+  margin-top:40px;
+  font-size:12px;
+  opacity:.6;
 }
