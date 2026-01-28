@@ -35,41 +35,46 @@ header{
   cursor:pointer;
 }
 
+/* CONTAINER */
 .cups{
-  display:flex;
-  justify-content:center;
-  gap:16px;
-  margin:40px 0;
+  position:relative;
+  height:160px;
+  margin:50px auto;
 }
 
+/* PAHAR CORECT (GURA JOS) */
 .cup{
   width:75px;
   height:105px;
   background:linear-gradient(180deg,#2ecc71,#1e7f4f);
   border:3px solid #9bffcf;
-  border-radius:28px 28px 10px 10px; /* corect */
-  position:relative;
+
+  /* SUS MIC, JOS MARE */
+  border-radius:12px 12px 32px 32px;
+
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  transition:transform .4s ease;
   cursor:pointer;
-  transition:transform .4s ease, box-shadow .3s ease;
-  box-shadow:0 12px 25px rgba(0,0,0,.6);
 }
 
-.cup:hover{
-  transform:translateY(-8px);
-}
-
+/* RIDICARE */
 .cup.reveal{
-  transform:translateY(-45px);
+  transform:translateX(-50%) translateY(-50px);
 }
 
+/* BILA */
 .ball{
-  width:20px;
-  height:20px;
+  width:18px;
+  height:18px;
   background:#e63946;
   border-radius:50%;
   position:absolute;
-  bottom:-30px;
-  left:27px;
+  bottom:-26px;
+  left:50%;
+  transform:translateX(-50%);
   display:none;
   box-shadow:0 0 10px rgba(230,57,70,.9);
 }
