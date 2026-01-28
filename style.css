@@ -35,40 +35,43 @@ header{
   cursor:pointer;
 }
 
-/* CONTAINER */
-.cups{
-  display:flex;
-  justify-content:center;
-  gap:16px;
-  margin:50px 0;
-}
-
-/* PAHAR – CORECT (MIC SUS, MARE JOS) */
-.cup{
-  width:75px;
-  height:105px;
-  background:linear-gradient(180deg,#2ecc71,#1e7f4f);
-  border:3px solid #9bffcf;
-  border-radius:14px 14px 36px 36px;
+.cups-track{
   position:relative;
+  height:170px;
+  margin:50px auto;
+  overflow:hidden;
+}
+
+/* PAHAR – TEXTURAT, GURA ÎN JOS */
+.cup{
+  width:78px;
+  height:115px;
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(0);
+  transition:transform .35s ease;
   cursor:pointer;
-  transition:transform .3s ease;
+
+  /* textură ca în poză */
+  background:
+    repeating-linear-gradient(
+      135deg,
+      #2ecc71 0px,
+      #2ecc71 6px,
+      #27ae60 6px,
+      #27ae60 12px
+    );
+
+  border:3px solid #a8ffd5;
+
+  /* MIC JOS, MARE SUS = GURA ÎN JOS */
+  border-radius:36px 36px 14px 14px;
 }
 
-/* AMESTEC (SHAKE) */
-.cup.shuffle{
-  animation: shake .3s ease;
-}
-
-@keyframes shake{
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(-12px); }
-  100% { transform: translateY(0); }
-}
-
-/* RIDICARE */
+/* RIDICARE LA ALEGERE */
 .cup.reveal{
-  transform:translateY(-50px);
+  transform:translateX(var(--x)) translateY(-55px);
 }
 
 /* BILA */
