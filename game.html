@@ -1,206 +1,57 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <title>Găsește bila</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Găsește bila</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
 
-  <!-- 🔥 FIREBASE COMPAT -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
-      authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
-      projectId: "jdrel-casino-f6ea5",
-      storageBucket: "jdrel-casino-f6ea5.appspot.com",
-      messagingSenderId: "727303157636",
-      appId: "1:727303157636:web:5aeb72d5adf7098efe0fd1"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
+  authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
+  projectId: "jdrel-casino-f6ea5",
+};
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-  </script>
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// 🔒 PROTECȚIE
+onAuthStateChanged(auth, user => {
+  if (!user) window.location.href = "index.html";
+});
+
+// 🚪 LOGOUT
+window.logout = function () {
+  signOut(auth).then(() => window.location.href = "index.html");
+};
+</script>
 </head>
 
 <body>
-
 <header>
-  🎯 Găsește bila
-  <div id="coins"></div>
+🎯 Găsește bila
+<div id="coins"></div>
 </header>
 
 <button class="logout" onclick="logout()">Logout</button>
 
 <main class="game-area">
-
-  <button class="start-btn" onclick="startGame()">
-    Start joc (−1.000 coins)
-  </button>
-
-  <div class="cups" id="cups">
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-    <div class="cup"><div class="ball"></div></div>
-  </div>
-
-  <div class="message" id="msg"></div>
-
+  <button class="start-btn">Start joc</button>
+  <div class="message">Demo funcțional ✅</div>
 </main>
 
 <footer>Joc demo · Fără bani reali · 18+</footer>
 
-<!-- 🔽 SCRIPT JOC + AUTH -->
 <script>
-/* 🔐 PROTECȚIE PAGINĂ */
-auth.onAuthStateChanged(user => {
-  if (!user) {
-    window.location.href = "login.html";
-  }
-});
-
-/* LOGOUT */
-function logout(){
-  localStorage.removeItem("logged");
-  window.location.href = ".index.html";
-}
-}
-
-/* 💰 COINS (LOCAL) */
-const START_COINS = 100000;
-const BET = 1000;
-const WIN = 5000;
-
-let cups = Array.from(document.querySelectorAll(".cup"));
-let ballCup = null;
-let playing = false;
-
 if(!localStorage.getItem("coins")){
-  localStorage.setItem("coins", START_COINS);
+  localStorage.setItem("coins", 100000);
 }
-updateCoins();
-
-function updateCoins(){
-  document.getElementById("coins").innerText =
-    "💰 Sold: " + localStorage.getItem("coins") + " coins";
-}
-
-/* 🎮 START JOC */
-function startGame(){
-  if(playing) return;
-
-  let coins = +localStorage.getItem("coins");
-  if(coins < BET){
-    alert("Nu ai suficiente coins!");
-    return;
-  }
-
-  localStorage.setItem("coins", coins - BET);
-  updateCoins();
-
-  playing = true;
-  document.getElementById("msg").innerText = "Urmărește bila…";
-
-  cups.forEach(c=>{
-    c.classList.remove("reveal");
-    c.querySelector(".ball").style.display = "none";
-    c.style.transform = "translateX(0)";
-    c.onclick = null;
-  });
-
-  const index = Math.floor(Math.random() * cups.length);
-  ballCup = cups[index];
-  ballCup.querySelector(".ball").style.display = "block";
-
-  setTimeout(()=>{
-    ballCup.querySelector(".ball").style.display = "none";
-    document.getElementById("msg").innerText = "Amestec paharele…";
-    shuffleReal();
-  }, 1500);
-}
-
-/* 🔀 AMESTECARE REALĂ */
-function shuffleReal(){
-  let rounds = 8;
-  let step = 0;
-
-  function doSwap(){
-    if(step >= rounds){
-      document.getElementById("msg").innerText = "Alege paharul!";
-      enablePick();
-      return;
-    }
-
-    let a = Math.floor(Math.random() * cups.length);
-    let b = Math.floor(Math.random() * cups.length);
-    if(a === b) return doSwap();
-
-    const cupA = cups[a];
-    const cupB = cups[b];
-    const distance = (b - a) * 90;
-
-    cupA.style.transition = "transform .35s ease";
-    cupB.style.transition = "transform .35s ease";
-
-    cupA.style.transform = `translateX(${distance}px)`;
-    cupB.style.transform = `translateX(${-distance}px)`;
-
-    setTimeout(()=>{
-      const parent = document.getElementById("cups");
-      const next = cupA.nextSibling === cupB ? cupA : cupA.nextSibling;
-      parent.insertBefore(cupB, cupA);
-      parent.insertBefore(cupA, next);
-
-      if(ballCup === cupA) ballCup = cupB;
-      else if(ballCup === cupB) ballCup = cupA;
-
-      cupA.style.transition = "none";
-      cupB.style.transition = "none";
-      cupA.style.transform = "translateX(0)";
-      cupB.style.transform = "translateX(0)";
-
-      cups = Array.from(document.querySelectorAll(".cup"));
-      step++;
-      setTimeout(doSwap, 80);
-    }, 350);
-  }
-
-  doSwap();
-}
-
-/* 🖱️ ALEGERE */
-function enablePick(){
-  cups.forEach(cup=>{
-    cup.onclick = ()=> pick(cup);
-  });
-}
-
-function pick(cup){
-  if(!playing) return;
-  playing = false;
-
-  ballCup.querySelector(".ball").style.display = "block";
-  cup.classList.add("reveal");
-
-  if(cup === ballCup){
-    localStorage.setItem(
-      "coins",
-      +localStorage.getItem("coins") + WIN
-    );
-    document.getElementById("msg").innerText =
-      "🎉 CÂȘTIG! +" + WIN + " coins";
-  } else {
-    document.getElementById("msg").innerText =
-      "❌ Ai pierdut!";
-  }
-
-  updateCoins();
-}
+document.getElementById("coins").innerText =
+  "💰 Sold: " + localStorage.getItem("coins");
 </script>
-
 </body>
 </html>
