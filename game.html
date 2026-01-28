@@ -1,55 +1,39 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-<meta charset="UTF-8">
-<title>Găsește bila</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
-  <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  <meta charset="UTF-8">
+  <title>Găsește bila</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
-    authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
-    projectId: "jdrel-casino-f6ea5",
-    storageBucket: "jdrel-casino-f6ea5.firebasestorage.app",
-    messagingSenderId: "727303157636",
-    appId: "1:727303157636:web:5aeb72d5adf7098efe0fd1",
-    measurementId: "G-XKRY1K2KTY"
-  };
+  <!-- 🔥 FIREBASE COMPAT -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  </script>
   <script>
-  console.log("Firebase OK:", firebase.apps.length > 0);
+    const firebaseConfig = {
+      apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
+      authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
+      projectId: "jdrel-casino-f6ea5",
+      storageBucket: "jdrel-casino-f6ea5.appspot.com",
+      messagingSenderId: "727303157636",
+      appId: "1:727303157636:web:5aeb72d5adf7098efe0fd1"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
   </script>
 </head>
 
 <body>
-  <script>
-auth.onAuthStateChanged(user => {
-  if (user) {
-    console.log("LOGAT:", user.email);
-  } else {
-    console.log("NU e nimeni logat");
-  }
-});
-</script>
 
 <header>
   🎯 Găsește bila
   <div id="coins"></div>
 </header>
+
 <button class="logout" onclick="logout()">Logout</button>
-  
+
 <main class="game-area">
 
   <button class="start-btn" onclick="startGame()">
@@ -57,11 +41,11 @@ auth.onAuthStateChanged(user => {
   </button>
 
   <div class="cups" id="cups">
-    <div class="cup" data-pos="0"><div class="ball"></div></div>
-    <div class="cup" data-pos="1"><div class="ball"></div></div>
-    <div class="cup" data-pos="2"><div class="ball"></div></div>
-    <div class="cup" data-pos="3"><div class="ball"></div></div>
-    <div class="cup" data-pos="4"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
+    <div class="cup"><div class="ball"></div></div>
   </div>
 
   <div class="message" id="msg"></div>
@@ -70,11 +54,23 @@ auth.onAuthStateChanged(user => {
 
 <footer>Joc demo · Fără bani reali · 18+</footer>
 
+<!-- 🔽 SCRIPT JOC + AUTH -->
 <script>
-if(localStorage.getItem("logged") !== "true"){
-  window.location.href = "index.html";
+/* 🔐 PROTECȚIE PAGINĂ */
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "login.html";
+  }
+});
+
+/* LOGOUT */
+function logout(){
+  auth.signOut().then(() => {
+    window.location.href = "login.html";
+  });
 }
-  
+
+/* 💰 COINS (LOCAL) */
 const START_COINS = 100000;
 const BET = 1000;
 const WIN = 5000;
@@ -93,6 +89,7 @@ function updateCoins(){
     "💰 Sold: " + localStorage.getItem("coins") + " coins";
 }
 
+/* 🎮 START JOC */
 function startGame(){
   if(playing) return;
 
@@ -115,7 +112,6 @@ function startGame(){
     c.onclick = null;
   });
 
-  // alegem paharul cu bila
   const index = Math.floor(Math.random() * cups.length);
   ballCup = cups[index];
   ballCup.querySelector(".ball").style.display = "block";
@@ -127,7 +123,7 @@ function startGame(){
   }, 1500);
 }
 
-/* 🔥 AMESTECARE REALĂ + MUTARE BILĂ */
+/* 🔀 AMESTECARE REALĂ */
 function shuffleReal(){
   let rounds = 8;
   let step = 0;
@@ -141,10 +137,7 @@ function shuffleReal(){
 
     let a = Math.floor(Math.random() * cups.length);
     let b = Math.floor(Math.random() * cups.length);
-    if(a === b){
-      doSwap();
-      return;
-    }
+    if(a === b) return doSwap();
 
     const cupA = cups[a];
     const cupB = cups[b];
@@ -157,17 +150,14 @@ function shuffleReal(){
     cupB.style.transform = `translateX(${-distance}px)`;
 
     setTimeout(()=>{
-      // swap în DOM
       const parent = document.getElementById("cups");
       const next = cupA.nextSibling === cupB ? cupA : cupA.nextSibling;
       parent.insertBefore(cupB, cupA);
       parent.insertBefore(cupA, next);
 
-      // 🔑 MUTĂM REFERINȚA BILEI
       if(ballCup === cupA) ballCup = cupB;
       else if(ballCup === cupB) ballCup = cupA;
 
-      // reset vizual
       cupA.style.transition = "none";
       cupB.style.transition = "none";
       cupA.style.transform = "translateX(0)";
@@ -175,13 +165,14 @@ function shuffleReal(){
 
       cups = Array.from(document.querySelectorAll(".cup"));
       step++;
-      setTimeout(doSwap, 60);
+      setTimeout(doSwap, 80);
     }, 350);
   }
 
   doSwap();
 }
 
+/* 🖱️ ALEGERE */
 function enablePick(){
   cups.forEach(cup=>{
     cup.onclick = ()=> pick(cup);
@@ -192,8 +183,8 @@ function pick(cup){
   if(!playing) return;
   playing = false;
 
-  cup.classList.add("reveal");
   ballCup.querySelector(".ball").style.display = "block";
+  cup.classList.add("reveal");
 
   if(cup === ballCup){
     localStorage.setItem(
@@ -209,10 +200,6 @@ function pick(cup){
 
   updateCoins();
 }
- function logout(){
-  localStorage.removeItem("logged");
-  window.location.href = "index.html";
- } 
 </script>
 
 </body>
