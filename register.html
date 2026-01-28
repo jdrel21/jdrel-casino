@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<title>Register</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-box">
+  <h2>Înregistrare</h2>
+
+  <input type="text" id="regUser" placeholder="Username">
+  <input type="password" id="regPass" placeholder="Parolă">
+
+  <button onclick="register()">Creează cont</button>
+
+  <p class="bonus">🎁 Bonus: 100.000 coins DEMO</p>
+
+  <p class="auth-link">
+    Ai cont? <a href="index.html">Login</a>
+  </p>
+
+  <div id="msg"></div>
+</div>
+
+<script>
+function register(){
+  let user = document.getElementById("regUser").value;
+  let pass = document.getElementById("regPass").value;
+
+  if(user.length < 3 || pass.length < 3){
+    document.getElementById("msg").innerText =
+      "❌ Minim 3 caractere";
+    return;
+  }
+
+  localStorage.setItem("user", JSON.stringify({
+    user:user,
+    pass:pass
+  }));
+
+  localStorage.setItem("coins", 100000);
+  localStorage.setItem("logged", "true");
+
+  window.location.href = "game.html";
+}
+</script>
+
+</body>
+</html>
