@@ -35,36 +35,32 @@ header{
   cursor:pointer;
 }
 
-/* CONTAINER PAHARE */
 .cups{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin:50px 0;
   position:relative;
-  height:160px;
-  width:100%;
-  max-width:520px;
-  margin:50px auto;
 }
 
-/* PAHAR CORECT (PARTEA MARE JOS) */
+/* PAHAR – ORIENTARE CORECTĂ */
 .cup{
   width:75px;
   height:105px;
   background:linear-gradient(180deg,#2ecc71,#1e7f4f);
   border:3px solid #9bffcf;
-  border-radius:14px 14px 34px 34px;
-  position:absolute;
-  bottom:0;
-  left:50%;
-  transform:translateX(-50%);
-  transition:transform .35s ease;
+  border-radius:12px 12px 34px 34px; /* mic sus, mare jos */
+  position:relative;
   cursor:pointer;
+  transition:transform .4s ease;
 }
 
-/* RIDICARE LA ALEGERE */
+/* RIDICARE */
 .cup.reveal{
-  transform:translateX(-50%) translateY(-50px);
+  transform:translateY(-50px);
 }
 
-/* BILA (ROȘIE, ASCUNSĂ) */
+/* BILA */
 .ball{
   width:18px;
   height:18px;
