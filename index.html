@@ -40,10 +40,9 @@ const BET = 1000;
 const WIN = 5000;
 
 let cups = [];
-let ballCup = null;
+let ballIndex = 0;
 let playing = false;
 
-// INIT COINS
 if (!localStorage.getItem("coins")) {
   localStorage.setItem("coins", START_COINS);
 }
@@ -57,7 +56,7 @@ function updateCoins(){
 function startGame(){
   if(playing) return;
 
-  let coins = parseInt(localStorage.getItem("coins"));
+  let coins = +localStorage.getItem("coins");
   if(coins < BET){
     alert("Nu ai suficiente coins!");
     return;
@@ -67,62 +66,69 @@ function startGame(){
   updateCoins();
 
   playing = true;
-  document.getElementById("msg").innerText = "Amestec paharele...";
+  document.getElementById("msg").innerText = "Urmărește bila...";
 
   cups = Array.from(document.querySelectorAll(".cup"));
 
-  // reset vizual
+  // reset complet
   cups.forEach(c=>{
     c.classList.remove("reveal");
+    c.style.transform = "translateX(0)";
     c.querySelector(".ball").style.display = "none";
-    c.style.transform = "";
   });
 
-  // alegem paharul cu bila (ASCUNS)
-  ballCup = cups[Math.floor(Math.random() * cups.length)];
+  // arată bila 1 secundă
+  ballIndex = Math.floor(Math.random() * cups.length);
+  cups[ballIndex].querySelector(".ball").style.display = "block";
 
-  shuffleCups(7);
+  setTimeout(()=>{
+    cups[ballIndex].querySelector(".ball").style.display = "none";
+    document.getElementById("msg").innerText = "Amestec paharele...";
+    shuffle();
+  }, 1000);
 }
 
-function shuffleCups(times){
-  const container = document.getElementById("cups");
-  let count = 0;
-  const spacing = 90;
-  const center = Math.floor(cups.length / 2);
+function shuffle(){
+  let rounds = 6;
+  let step = 90;
 
+  let order = [...cups];
+
+  let i = 0;
   let interval = setInterval(()=>{
-    cups.sort(() => Math.random() - 0.5);
+    order.sort(() => Math.random() - 0.5);
 
-    cups.forEach((cup, i)=>{
-      let offset = (i - center) * spacing;
-      cup.style.transform = `translateX(${offset}px)`;
+    order.forEach((cup, idx)=>{
+      cup.style.transform = `translateX(${(idx - 2) * step}px)`;
     });
 
-    count++;
-    if(count >= times){
+    i++;
+    if(i >= rounds){
       clearInterval(interval);
       document.getElementById("msg").innerText = "Alege paharul!";
-      enablePick();
+      enablePick(order);
     }
-  }, 300);
+  }, 350);
 }
 
-function enablePick(){
-  cups.forEach(cup=>{
-    cup.onclick = ()=> pickCup(cup);
+function enablePick(order){
+  order.forEach(cup=>{
+    cup.onclick = ()=> pick(cup, order);
   });
 }
 
-function pickCup(cup){
+function pick(cup, order){
   if(!playing) return;
   playing = false;
 
   cup.classList.add("reveal");
-  ballCup.querySelector(".ball").style.display = "block";
+  cups[ballIndex].querySelector(".ball").style.display = "block";
 
-  if(cup === ballCup){
-    let coins = parseInt(localStorage.getItem("coins"));
-    localStorage.setItem("coins", coins + WIN);
+  if(cup === cups[ballIndex]){
+    localStorage.setItem(
+      "coins",
+      +localStorage.getItem("coins") + WIN
+    );
     document.getElementById("msg").innerText =
       "🎉 CÂȘTIG! +" + WIN + " coins";
   } else {
