@@ -6,42 +6,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="style.css">
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
-  authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
-  projectId: "jdrel-casino-f6ea5",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-onAuthStateChanged(auth, user => {
-  if (user) window.location.href = "game.html";
-});
-
-window.login = function () {
-  const email = document.getElementById("loginUser").value;
-  const pass = document.getElementById("loginPass").value;
-
-  signInWithEmailAndPassword(auth, email, pass)
-    .then(() => window.location.href = "game.html")
-    .catch(err => document.getElementById("msg").innerText = "❌ " + err.message);
-};
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyC3wdh4xQDxkk2siLIbtqV1LI_Q9ahrRE8",
+    authDomain: "jdrel-casino-f6ea5.firebaseapp.com",
+    projectId: "jdrel-casino-f6ea5",
+    appId: "1:727303157636:web:5aeb72d5adf7098efe0fd1"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
 </script>
 </head>
 
 <body>
 <div class="auth-box">
-  <h2>Autentificare</h2>
-  <input type="email" id="loginUser" placeholder="Email">
-  <input type="password" id="loginPass" placeholder="Parolă">
+  <h2>Login</h2>
+  <input id="email" placeholder="Email">
+  <input id="pass" type="password" placeholder="Parolă">
   <button onclick="login()">Login</button>
-  <p class="auth-link">Nu ai cont? <a href="register.html">Register</a></p>
+  <p><a href="register.html">Înregistrare</a></p>
   <div id="msg"></div>
 </div>
+
+<script>
+auth.onAuthStateChanged(user=>{
+  if(user) window.location.href="game.html";
+});
+
+function login(){
+  auth.signInWithEmailAndPassword(email.value, pass.value)
+    .then(()=> window.location.href="game.html")
+    .catch(e=> msg.innerText=e.message);
+}
+</script>
 </body>
 </html>
